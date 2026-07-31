@@ -5,6 +5,11 @@ server:
 spring:
   application:
     name: learn-student-backend
+  # ===================== 文件上传配置 =====================
+  servlet:
+    multipart:
+      max-file-size: 5MB       # 单个文件上限，超出抛 MaxUploadSizeExceededException（全局处理器转 400）
+      max-request-size: 6MB    # 单次请求总量上限（留 1MB 给表单其他字段）
   # ===================== 数据源配置 =====================
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -36,3 +41,10 @@ auth:
     secret: StudentMs@2026#JwtSecretKeyForHmacSha256!
     # Token 有效期（分钟），过期后需重新登录
     expire-minutes: 120
+
+# ===================== 文件存储配置 =====================
+storage:
+  # 上传文件落盘目录（相对项目工作目录；生产环境应换成绝对路径或对象存储）
+  location: ./uploads
+  # 允许的文件类型白名单（校验请求的 Content-Type）
+  allowed-types: image/jpeg,image/png,image/gif,image/webp

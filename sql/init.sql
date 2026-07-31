@@ -11,6 +11,7 @@ CREATE DATABASE IF NOT EXISTS student_ms
 USE student_ms;
 
 -- 重新执行脚本时先删旧表（顺序与建表相反：先删引用别人的表）
+DROP TABLE IF EXISTS sys_file;
 DROP TABLE IF EXISTS score;
 DROP TABLE IF EXISTS student;
 DROP TABLE IF EXISTS course;
@@ -145,8 +146,27 @@ CREATE TABLE op_log (
     KEY idx_create_time (create_time)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '操作日志表';
 
+-- -----------------------------------------------------
+-- 8. 文件表（第十步）：记录上传文件的元数据，不存文件本身
+-- -----------------------------------------------------
+CREATE TABLE sys_file (
+    id            BIGINT        NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    original_name VARCHAR(255)  NOT NULL                COMMENT '原始文件名（下载/展示用）',
+    stored_name   VARCHAR(64)   NOT NULL                COMMENT '磁盘存储名：UUID.扩展名',
+    content_type  VARCHAR(100)  NOT NULL                COMMENT '文件 MIME 类型',
+    size          BIGINT        NOT NULL                COMMENT '文件大小（字节）',
+    uploaded_by   BIGINT        DEFAULT NULL            COMMENT '上传人ID（外键 -> sys_user.id，允许为空）',
+    create_time   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '上传时间',
+    deleted       TINYINT       NOT NULL DEFAULT 0      COMMENT '逻辑删除：0未删除 1已删除',
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_stored_name (stored_name),
+    KEY idx_uploaded_by (uploaded_by),
+    CONSTRAINT fk_file_uploader
+        FOREIGN KEY (uploaded_by) REFERENCES sys_user (id)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '文件表';
+
 -- =====================================================
--- 8. 初始化测试数据（可选）
+-- 9. 初始化测试数据（可选）
 -- =====================================================
 
 -- 一个管理员、一名教师（密码先明文存 123456，登录功能时再改成加密）

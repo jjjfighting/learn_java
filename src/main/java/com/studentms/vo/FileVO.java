@@ -11,7 +11,10 @@ import lombok.Data;
 @Data
 public class FileVO {
 
-    /** 访问路径，如 /files/view/a1b2c3d4.png */
+    /** 文件表主键：前端把它存进业务表单（如学生头像 photo 关联），随时可重新下载 */
+    private Long id;
+
+    /** 访问路径，如 /files/view/a1b2c3d4.png（内联展示用） */
     private String url;
 
     /** 上传时的原始文件名（仅展示用，落盘用的是 UUID 名） */
