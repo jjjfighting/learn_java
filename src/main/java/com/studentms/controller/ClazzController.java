@@ -1,5 +1,6 @@
 package com.studentms.controller;
 
+import com.studentms.annotation.RequireRole;
 import com.studentms.common.Result;
 import com.studentms.entity.Clazz;
 import com.studentms.service.ClazzService;
@@ -61,7 +62,8 @@ public class ClazzController {
         return Result.success();
     }
 
-    /** 删除班级（逻辑删除；班里有学生会被 Service 拦下，返回 3002） */
+    /** 删除班级（逻辑删除；班里有学生会被 Service 拦下返回 3002），高危操作仅管理员可执行 */
+    @RequireRole("ADMIN")
     @DeleteMapping("/{id}")
     public Result<Void> remove(@PathVariable Long id) {
         clazzService.removeClazz(id);

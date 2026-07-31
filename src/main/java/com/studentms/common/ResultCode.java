@@ -28,6 +28,7 @@ public enum ResultCode {
     USER_NOT_FOUND(1001, "用户不存在"),
     USERNAME_ALREADY_EXISTS(1002, "用户名已存在"),
     WRONG_CREDENTIALS(1003, "用户名或密码错误"),
+    TEACHER_ROLE_REQUIRED(1004, "目标用户不是教师，不能指定为授课教师"),
 
     // ========================= 学生模块 2xxx =========================
     STUDENT_NOT_FOUND(2001, "学生不存在"),
@@ -35,7 +36,13 @@ public enum ResultCode {
 
     // ========================= 班级模块 3xxx =========================
     CLAZZ_NOT_FOUND(3001, "班级不存在"),
-    CLAZZ_HAS_STUDENTS(3002, "该班级下还有学生，禁止删除");
+    CLAZZ_HAS_STUDENTS(3002, "该班级下还有学生，禁止删除"),
+    COURSE_NOT_FOUND(3003, "课程不存在"),
+    COURSE_HAS_SCORES(3004, "该课程已有成绩记录，禁止删除"),
+
+    // ========================= 成绩模块 4xxx =========================
+    SCORE_ALREADY_EXISTS(4001, "该学生在此课程已有成绩记录"),
+    SCORE_NOT_FOUND(4002, "成绩记录不存在");
 
     /** 业务码 */
     private final Integer code;

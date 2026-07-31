@@ -6,6 +6,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -81,7 +82,18 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 6. 数据库约束冲突（外键 / 唯一键 / NOT NULL 等）
+     * 6. 唯一键冲突（DuplicateKeyException 是 DataIntegrityViolationException 的子类，
+     * Spring 按"最具体优先"匹配到这里）
+     * 典型场景：并发下两个请求同时通过了 Service 的查重，后落库的被唯一索引拒绝
+     */
+    @ExceptionHandler(DuplicateKeyException.class)
+    public Result<Void> handleDuplicateKeyException(DuplicateKeyException e) {
+        log.warn("唯一键冲突：{}", e.getMessage());
+        return Result.error(ResultCode.BAD_REQUEST, "数据已存在，请勿重复提交");
+    }
+
+    /**
+     * 7. 其他数据库约束冲突（外键 / NOT NULL 等）
      * 典型场景：新增学生时 clazzId 填了一个不存在的班级，被外键约束拒绝
      */
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -91,7 +103,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 7. 兜底处理：捕获其他一切异常，保证前端永远收到结构化的 JSON，而不是 Tomcat 的 HTML 错误页
+     * 8. 兜底处理：捕获其他一切异常，保证前端永远收到结构化的 JSON，而不是 Tomcat 的 HTML 错误页
      * 必须放在最后——参数类型 Exception 是所有异常的祖先类，Spring 会优先匹配更具体的类型
      */
     @ExceptionHandler(Exception.class)

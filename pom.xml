@@ -24,6 +24,7 @@
         <java.version>17</java.version>
         <!-- 第三方依赖的版本号集中在 properties 里管理，方便统一升级 -->
         <mybatis-plus.version>3.5.7</mybatis-plus.version>
+        <jjwt.version>0.12.6</jjwt.version>
     </properties>
 
     <dependencies>
@@ -37,6 +38,33 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- JWT 三件套：api 是编译期接口，impl/jackson 是运行时实现（scope=runtime，打包时才需要） -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- BCrypt 密码加密：只引入 Spring Security 的"加密工具包"，版本号由父工程管理。
+             注意没有引入 spring-boot-starter-security——那会自动启用整套安全框架
+             （表单登录、默认拦截所有接口），与本项目"自定义拦截器 + JWT"的方案冲突 -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
         </dependency>
 
         <!-- MyBatis-Plus 启动器（SpringBoot3 专用版，注意 artifactId 带 boot3） -->

@@ -52,6 +52,7 @@ public class ClazzServiceImpl extends ServiceImpl<ClazzMapper, Clazz> implements
 
     @Override
     public void removeClazz(Long id) {
+        //  12321
         if (this.getById(id) == null) {
             throw new BusinessException(ResultCode.CLAZZ_NOT_FOUND);
         }

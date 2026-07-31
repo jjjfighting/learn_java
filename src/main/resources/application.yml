@@ -28,3 +28,11 @@ mybatis-plus:
       logic-delete-field: deleted
       logic-delete-value: 1
       logic-not-delete-value: 0
+
+# ===================== 认证配置 =====================
+auth:
+  jwt:
+    # HS256 签名密钥：要求至少 256 位（32 字符），生产环境务必换成随机生成的强密钥
+    secret: StudentMs@2026#JwtSecretKeyForHmacSha256!
+    # Token 有效期（分钟），过期后需重新登录
+    expire-minutes: 120

@@ -1,6 +1,7 @@
 package com.studentms.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.studentms.annotation.RequireRole;
 import com.studentms.common.Result;
 import com.studentms.dto.StudentQueryDTO;
 import com.studentms.entity.Student;
@@ -63,7 +64,8 @@ public class StudentController {
         return Result.success();
     }
 
-    /** 删除学生（逻辑删除） */
+    /** 删除学生（逻辑删除），高危操作仅管理员可执行 */
+    @RequireRole("ADMIN")
     @DeleteMapping("/{id}")
     public Result<Void> remove(@PathVariable Long id) {
         studentService.removeStudent(id);
