@@ -1,5 +1,6 @@
 package com.studentms.controller;
 
+import com.studentms.annotation.OperationLog;
 import com.studentms.annotation.RequireRole;
 import com.studentms.common.Result;
 import com.studentms.common.ResultCode;
@@ -59,6 +60,7 @@ public class ScoreController {
     }
 
     /** @RequireRole 支持多角色：教师和管理员都能录入，其他角色 403 */
+    @OperationLog(module = "score", action = "CREATE")
     @RequireRole({"TEACHER", "ADMIN"})
     @PostMapping
     public Result<Long> add(@Valid @RequestBody Score score) {
@@ -66,6 +68,7 @@ public class ScoreController {
         return Result.success("录入成功", score.getId());
     }
 
+    @OperationLog(module = "score", action = "UPDATE")
     @RequireRole({"TEACHER", "ADMIN"})
     @PutMapping("/{id}")
     public Result<Void> update(@PathVariable Long id, @Valid @RequestBody Score score) {
@@ -73,6 +76,7 @@ public class ScoreController {
         return Result.success();
     }
 
+    @OperationLog(module = "score", action = "DELETE")
     @RequireRole({"TEACHER", "ADMIN"})
     @DeleteMapping("/{id}")
     public Result<Void> remove(@PathVariable Long id) {

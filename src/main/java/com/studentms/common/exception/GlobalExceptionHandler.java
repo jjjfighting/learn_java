@@ -13,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.util.stream.Collectors;
 
@@ -103,7 +104,17 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 8. 兜底处理：捕获其他一切异常，保证前端永远收到结构化的 JSON，而不是 Tomcat 的 HTML 错误页
+     * 8. 上传文件超过 yml 里配置的大小上限（max-file-size: 5MB）
+     * 注意这个异常在进入 Controller 之前就抛了，照样能被 @RestControllerAdvice 接住
+     */
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public Result<Void> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
+        log.warn("上传文件过大：{}", e.getMessage());
+        return Result.error(ResultCode.BAD_REQUEST, "文件大小超出限制（单个文件最大 5MB）");
+    }
+
+    /**
+     * 9. 兜底处理：捕获其他一切异常，保证前端永远收到结构化的 JSON，而不是 Tomcat 的 HTML 错误页
      * 必须放在最后——参数类型 Exception 是所有异常的祖先类，Spring 会优先匹配更具体的类型
      */
     @ExceptionHandler(Exception.class)

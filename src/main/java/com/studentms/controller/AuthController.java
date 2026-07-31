@@ -1,5 +1,6 @@
 package com.studentms.controller;
 
+import com.studentms.annotation.OperationLog;
 import com.studentms.common.Result;
 import com.studentms.common.UserContext;
 import com.studentms.common.UserInfo;
@@ -28,6 +29,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @OperationLog(module = "auth", action = "LOGIN")
     @PostMapping("/login")
     public Result<LoginVO> login(@Valid @RequestBody LoginDTO dto) {
         return Result.success("登录成功", authService.login(dto));

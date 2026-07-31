@@ -1,6 +1,7 @@
 package com.studentms.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.studentms.annotation.OperationLog;
 import com.studentms.annotation.RequireRole;
 import com.studentms.common.Result;
 import com.studentms.dto.StudentQueryDTO;
@@ -50,6 +51,7 @@ public class StudentController {
     }
 
     /** 新增学生，请求体为 Student JSON */
+    @OperationLog(module = "student", action = "CREATE")
     @PostMapping
     public Result<Long> add(@Valid @RequestBody Student student) {
         studentService.addStudent(student);
@@ -58,6 +60,7 @@ public class StudentController {
     }
 
     /** 修改学生，id 以路径参数为准 */
+    @OperationLog(module = "student", action = "UPDATE")
     @PutMapping("/{id}")
     public Result<Void> update(@PathVariable Long id, @Valid @RequestBody Student student) {
         studentService.updateStudent(id, student);
@@ -65,6 +68,7 @@ public class StudentController {
     }
 
     /** 删除学生（逻辑删除），高危操作仅管理员可执行 */
+    @OperationLog(module = "student", action = "DELETE")
     @RequireRole("ADMIN")
     @DeleteMapping("/{id}")
     public Result<Void> remove(@PathVariable Long id) {

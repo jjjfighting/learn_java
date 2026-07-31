@@ -83,6 +83,7 @@ CREATE TABLE student (
     age         TINYINT     DEFAULT NULL            COMMENT '年龄',
     phone       VARCHAR(20) DEFAULT NULL            COMMENT '联系电话',
     email       VARCHAR(100) DEFAULT NULL           COMMENT '电子邮箱',
+    photo       VARCHAR(255) DEFAULT NULL           COMMENT '头像访问路径',
     clazz_id    BIGINT      DEFAULT NULL            COMMENT '所属班级ID（外键 -> clazz.id）',
     user_id     BIGINT      DEFAULT NULL            COMMENT '关联账号ID（外键 -> sys_user.id，允许为空）',
     create_time DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -122,8 +123,30 @@ CREATE TABLE score (
         FOREIGN KEY (course_id) REFERENCES course (id)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '成绩表';
 
+-- -----------------------------------------------------
+-- 7. 操作日志表（第九步）：只追加不修改，无 update_time / deleted
+-- -----------------------------------------------------
+CREATE TABLE op_log (
+    id          BIGINT        NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    user_id     BIGINT        DEFAULT NULL            COMMENT '操作人ID（登录接口调用时可能为空）',
+    username    VARCHAR(50)   DEFAULT NULL            COMMENT '操作人用户名',
+    module      VARCHAR(30)   NOT NULL                COMMENT '模块：student/clazz/course/score/auth/file',
+    action      VARCHAR(20)   NOT NULL                COMMENT '动作：CREATE/UPDATE/DELETE/LOGIN/UPLOAD 等',
+    method      VARCHAR(10)   DEFAULT NULL            COMMENT 'HTTP 方法',
+    path        VARCHAR(255)  DEFAULT NULL            COMMENT '请求路径',
+    ip          VARCHAR(64)   DEFAULT NULL            COMMENT '客户端 IP',
+    params      VARCHAR(1000) DEFAULT NULL            COMMENT '请求参数（已脱敏、截断）',
+    result_code INT           DEFAULT NULL            COMMENT '响应业务码',
+    error_msg   VARCHAR(500)  DEFAULT NULL            COMMENT '异常消息（成功时为空）',
+    cost_ms     BIGINT        DEFAULT NULL            COMMENT '接口耗时（毫秒）',
+    create_time DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录时间',
+    PRIMARY KEY (id),
+    KEY idx_module_action (module, action),
+    KEY idx_create_time (create_time)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '操作日志表';
+
 -- =====================================================
--- 7. 初始化测试数据（可选）
+-- 8. 初始化测试数据（可选）
 -- =====================================================
 
 -- 一个管理员、一名教师（密码先明文存 123456，登录功能时再改成加密）

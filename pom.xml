@@ -67,6 +67,13 @@
             <artifactId>spring-security-crypto</artifactId>
         </dependency>
 
+        <!-- AOP 启动器：spring-aop + AspectJ 编织器（aspectjweaver），
+             让 @Aspect 注解切面生效——操作日志就靠它无侵入地拦截接口调用 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
         <!-- MyBatis-Plus 启动器（SpringBoot3 专用版，注意 artifactId 带 boot3） -->
         <dependency>
             <groupId>com.baomidou</groupId>

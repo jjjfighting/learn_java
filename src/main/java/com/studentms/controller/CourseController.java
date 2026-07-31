@@ -1,5 +1,6 @@
 package com.studentms.controller;
 
+import com.studentms.annotation.OperationLog;
 import com.studentms.annotation.RequireRole;
 import com.studentms.common.Result;
 import com.studentms.entity.Course;
@@ -45,12 +46,14 @@ public class CourseController {
         return Result.success(courseService.getCourse(id));
     }
 
+    @OperationLog(module = "course", action = "CREATE")
     @PostMapping
     public Result<Long> add(@Valid @RequestBody Course course) {
         courseService.addCourse(course);
         return Result.success("新增成功", course.getId());
     }
 
+    @OperationLog(module = "course", action = "UPDATE")
     @PutMapping("/{id}")
     public Result<Void> update(@PathVariable Long id, @Valid @RequestBody Course course) {
         courseService.updateCourse(id, course);
@@ -58,6 +61,7 @@ public class CourseController {
     }
 
     /** 删除是高危操作：@RequireRole 由认证拦截器统一检查，只有 ADMIN 能走到业务逻辑 */
+    @OperationLog(module = "course", action = "DELETE")
     @RequireRole("ADMIN")
     @DeleteMapping("/{id}")
     public Result<Void> remove(@PathVariable Long id) {

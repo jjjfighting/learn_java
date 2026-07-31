@@ -42,7 +42,11 @@ public enum ResultCode {
 
     // ========================= 成绩模块 4xxx =========================
     SCORE_ALREADY_EXISTS(4001, "该学生在此课程已有成绩记录"),
-    SCORE_NOT_FOUND(4002, "成绩记录不存在");
+    SCORE_NOT_FOUND(4002, "成绩记录不存在"),
+
+    // ========================= 文件模块 5xxx =========================
+    FILE_EMPTY(5001, "上传文件不能为空"),
+    FILE_TYPE_NOT_ALLOWED(5002, "文件类型不允许，仅支持 JPEG/PNG/GIF/WebP 图片");
 
     /** 业务码 */
     private final Integer code;

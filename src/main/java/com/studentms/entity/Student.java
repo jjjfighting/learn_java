@@ -52,6 +52,9 @@ public class Student implements Serializable {
     @Email(message = "邮箱格式不正确")
     private String email;
 
+    /** 头像访问路径，如 /files/view/a1b2c3d4.png——来自文件上传接口的返回值，库里只存路径不存文件 */
+    private String photo;
+
     /** 所属班级ID（外键 -> clazz.id） */
     private Long clazzId;
 

@@ -1,5 +1,6 @@
 package com.studentms.controller;
 
+import com.studentms.annotation.OperationLog;
 import com.studentms.annotation.RequireRole;
 import com.studentms.common.Result;
 import com.studentms.entity.Clazz;
@@ -49,6 +50,7 @@ public class ClazzController {
     }
 
     /** 新增班级 */
+    @OperationLog(module = "clazz", action = "CREATE")
     @PostMapping
     public Result<Long> add(@Valid @RequestBody Clazz clazz) {
         clazzService.addClazz(clazz);
@@ -56,6 +58,7 @@ public class ClazzController {
     }
 
     /** 修改班级 */
+    @OperationLog(module = "clazz", action = "UPDATE")
     @PutMapping("/{id}")
     public Result<Void> update(@PathVariable Long id, @Valid @RequestBody Clazz clazz) {
         clazzService.updateClazz(id, clazz);
@@ -63,6 +66,7 @@ public class ClazzController {
     }
 
     /** 删除班级（逻辑删除；班里有学生会被 Service 拦下返回 3002），高危操作仅管理员可执行 */
+    @OperationLog(module = "clazz", action = "DELETE")
     @RequireRole("ADMIN")
     @DeleteMapping("/{id}")
     public Result<Void> remove(@PathVariable Long id) {
