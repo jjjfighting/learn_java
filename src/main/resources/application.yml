@@ -18,6 +18,14 @@ spring:
     username: root
     password: admin    # TODO 改成你自己 MySQL 的 root 密码
 
+  # ===================== Redis 缓存配置（第十二步） =====================
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      # 连接超时 3 秒：Redis 挂了时快速失败，而不是长时间挂起请求
+      timeout: 3s
+
 # ===================== MyBatis-Plus 配置 =====================
 mybatis-plus:
   configuration:

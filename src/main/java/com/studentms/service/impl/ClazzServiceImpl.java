@@ -10,6 +10,8 @@ import com.studentms.mapper.ClazzMapper;
 import com.studentms.mapper.StudentMapper;
 import com.studentms.service.ClazzService;
 import com.studentms.vo.ClazzVO;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,17 +32,21 @@ public class ClazzServiceImpl extends ServiceImpl<ClazzMapper, Clazz> implements
         this.studentMapper = studentMapper;
     }
 
+    /** 班级列表读多写少，整表缓存一份；注意它含"在校学生数"，所以学生变动也要失效它 */
+    @Cacheable(cacheNames = "clazzList", key = "'all'")
     @Override
     public List<ClazzVO> listClazzes() {
         // 走自定义 SQL：LEFT JOIN student 分组统计，一次查询拿到全部班级 + 人数
         return baseMapper.selectClazzListWithStudentCount();
     }
 
+    @CacheEvict(cacheNames = "clazzList", allEntries = true)
     @Override
     public void addClazz(Clazz clazz) {
         this.save(clazz);
     }
 
+    @CacheEvict(cacheNames = "clazzList", allEntries = true)
     @Override
     public void updateClazz(Long id, Clazz clazz) {
         if (this.getById(id) == null) {
@@ -50,6 +56,7 @@ public class ClazzServiceImpl extends ServiceImpl<ClazzMapper, Clazz> implements
         this.updateById(clazz);
     }
 
+    @CacheEvict(cacheNames = "clazzList", allEntries = true)
     @Override
     public void removeClazz(Long id) {
         //  12321

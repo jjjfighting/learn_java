@@ -18,6 +18,7 @@ import com.studentms.vo.StudentImportResultVO;
 import com.studentms.vo.StudentVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -60,6 +61,8 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
         return this.page(new Page<>(query.getPageNum(), query.getPageSize()), wrapper);
     }
 
+    /** 学生变动会改变班级列表里的在校人数，失效 clazzList */
+    @CacheEvict(cacheNames = "clazzList", allEntries = true)
     @Override
     public void addStudent(Student student) {
         if (existsByStudentNo(student.getStudentNo(), null)) {
@@ -70,6 +73,8 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
         this.save(student);
     }
 
+    /** 改学生可能移动班级（clazzId 变了），人数分布会变，同样失效 clazzList */
+    @CacheEvict(cacheNames = "clazzList", allEntries = true)
     @Override
     public void updateStudent(Long id, Student student) {
         if (this.getById(id) == null) {
@@ -85,6 +90,7 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
         super.updateById(student);
     }
 
+    @CacheEvict(cacheNames = "clazzList", allEntries = true)
     @Override
     public void removeStudent(Long id) {
         if (this.getById(id) == null) {
@@ -114,6 +120,8 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
         return vo;
     }
 
+    /** Excel 批量导入也是新增学生，班级人数会变，落库后一并失效 clazzList */
+    @CacheEvict(cacheNames = "clazzList", allEntries = true)
     @Override
     public StudentImportResultVO importStudents(MultipartFile file) {
         // ① 文件本身校验：空文件 / 非 Excel 后缀

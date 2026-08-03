@@ -89,6 +89,12 @@
             <version>3.3.4</version>
         </dependency>
 
+        <!-- Redis 缓存（第十二步）：热门查询缓存到 Redis，配 Spring Cache 抽象用注解声明式使用 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
         <!-- MySQL 驱动：只在运行期需要，编译期不需要，所以 scope 是 runtime -->
         <dependency>
             <groupId>com.mysql</groupId>

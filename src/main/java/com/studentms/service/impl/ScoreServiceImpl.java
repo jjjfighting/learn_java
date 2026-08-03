@@ -13,6 +13,8 @@ import com.studentms.service.ScoreService;
 import com.studentms.vo.CourseScoreStatsVO;
 import com.studentms.vo.ScoreVO;
 import com.studentms.vo.StudentScoreStatsVO;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,6 +40,8 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
         return baseMapper.selectScoreList(studentId, courseId);
     }
 
+    /** 成绩一变，两个统计维度的缓存都过时，一并清空（allEntries 全量失效最简单可靠） */
+    @CacheEvict(cacheNames = {"scoreStatsByStudent", "scoreStatsByCourse"}, allEntries = true)
     @Override
     public void addScore(Score score) {
         // 录入前四道关，缺一不可：
@@ -76,6 +80,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
         this.save(score);
     }
 
+    @CacheEvict(cacheNames = {"scoreStatsByStudent", "scoreStatsByCourse"}, allEntries = true)
     @Override
     public void updateScore(Long id, Score score) {
         Score db = this.getBaseMapper().selectById(id);
@@ -89,6 +94,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
         this.updateById(db);
     }
 
+    @CacheEvict(cacheNames = {"scoreStatsByStudent", "scoreStatsByCourse"}, allEntries = true)
     @Override
     public void removeScore(Long id) {
         if (this.getById(id) == null) {
@@ -106,6 +112,8 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
         return vo;
     }
 
+    /** 学生维度统计是聚合 SQL，越查越贵，按 studentId 缓存 5 分钟 */
+    @Cacheable(cacheNames = "scoreStatsByStudent", key = "#studentId")
     @Override
     public StudentScoreStatsVO statsByStudent(Long studentId) {
         if (studentMapper.selectById(studentId) == null) {
@@ -115,6 +123,8 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
         return baseMapper.statsByStudent(studentId);
     }
 
+    /** 课程维度统计同样按 courseId 缓存 5 分钟 */
+    @Cacheable(cacheNames = "scoreStatsByCourse", key = "#courseId")
     @Override
     public CourseScoreStatsVO statsByCourse(Long courseId) {
         if (courseMapper.selectById(courseId) == null) {

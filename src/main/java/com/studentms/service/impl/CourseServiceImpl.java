@@ -13,6 +13,8 @@ import com.studentms.mapper.UserMapper;
 import com.studentms.service.CourseService;
 import com.studentms.vo.CourseVO;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,18 +38,23 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         this.scoreMapper = scoreMapper;
     }
 
+    /** 课程列表读多写少，整表缓存一份，10 分钟后过期 */
+    @Cacheable(cacheNames = "courseList", key = "'all'")
     @Override
     public List<CourseVO> listCourses() {
         // 一条 LEFT JOIN SQL 带出所有课程的教师姓名，避免 N+1
         return baseMapper.selectCourseListWithTeacher();
     }
 
+    @CacheEvict(cacheNames = "courseList", allEntries = true)
     @Override
     public void addCourse(Course course) {
         checkTeacher(course.getTeacherId());
         this.save(course);
     }
 
+    /** 改课程名会同时影响统计回显的 courseName，所以课程列表和"按课程统计"缓存一起失效 */
+    @CacheEvict(cacheNames = {"courseList", "scoreStatsByCourse"}, allEntries = true)
     @Override
     public void updateCourse(Long id, Course course) {
         if (this.getById(id) == null) {
@@ -58,6 +65,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         this.updateById(course);
     }
 
+    @CacheEvict(cacheNames = "courseList", allEntries = true)
     @Override
     public void removeCourse(Long id) {
         if (this.getById(id) == null) {
