@@ -81,6 +81,14 @@
             <version>${mybatis-plus.version}</version>
         </dependency>
 
+        <!-- EasyExcel：Excel 导入导出（第十一步）——
+             注解驱动、流式读写省内存，比原生 POI 少写大量样板代码 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>3.3.4</version>
+        </dependency>
+
         <!-- MySQL 驱动：只在运行期需要，编译期不需要，所以 scope 是 runtime -->
         <dependency>
             <groupId>com.mysql</groupId>

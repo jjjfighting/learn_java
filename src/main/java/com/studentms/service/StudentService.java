@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.studentms.dto.StudentQueryDTO;
 import com.studentms.entity.Student;
+import com.studentms.vo.StudentImportResultVO;
 import com.studentms.vo.StudentVO;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 学生业务层接口
@@ -28,4 +30,12 @@ public interface StudentService extends IService<Student> {
 
     /** 查询详情（含班级名称回显），不存在时抛业务异常 */
     StudentVO getStudent(Long id);
+
+    /**
+     * 从 Excel 批量导入学生（部分成功策略）
+     * <p>
+     * 逐行校验（学号必填且唯一、姓名必填、性别/年龄/班级合法性），
+     * 合法行落库，错误行收集进返回结果，不会中断整批导入。
+     */
+    StudentImportResultVO importStudents(MultipartFile file);
 }

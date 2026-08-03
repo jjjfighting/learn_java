@@ -7,6 +7,7 @@ import com.studentms.common.Result;
 import com.studentms.dto.StudentQueryDTO;
 import com.studentms.entity.Student;
 import com.studentms.service.StudentService;
+import com.studentms.vo.StudentImportResultVO;
 import com.studentms.vo.StudentVO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 学生模块接口（RESTful 风格：URL 只表示资源，动作交给 HTTP 方法）
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
  * GET    /students          分页条件查询
  * GET    /students/{id}     查询详情
  * POST   /students          新增
+ * POST   /students/import   从 Excel 批量导入（仅 ADMIN）
  * PUT    /students/{id}     修改
  * DELETE /students/{id}     删除
  * </pre>
@@ -57,6 +61,18 @@ public class StudentController {
         studentService.addStudent(student);
         // save 后自增主键已回填到 student.id，返回它方便前端直接跳详情页
         return Result.success("新增成功", student.getId());
+    }
+
+    /**
+     * 从 Excel 批量导入学生，仅 ADMIN 可执行（批量建人影响面大）
+     * <p>
+     * multipart 表单字段名 file；返回成功条数 + 错误行明细（部分成功策略，错误行不落库）。
+     */
+    @OperationLog(module = "student", action = "IMPORT")
+    @RequireRole("ADMIN")
+    @PostMapping("/import")
+    public Result<StudentImportResultVO> importStudents(@RequestParam("file") MultipartFile file) {
+        return Result.success(studentService.importStudents(file));
     }
 
     /** 修改学生，id 以路径参数为准 */
